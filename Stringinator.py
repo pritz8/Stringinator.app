@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog, messagebox, ttk
 import os
 
 def browse_file():
@@ -9,13 +9,13 @@ def browse_file():
         entry_input_file.insert(0, filename)
 
 def toggle_theme():
-    current_theme = root.tk_setPalette()  # Get the current theme
-    if current_theme == '':
+    current_theme = root.tk_setPalette(background='#FFFFFF', foreground = '#000000')  # Get the current theme
+    if current_theme == 'light':
         # Switch to dark mode
         root.tk_setPalette(background='#2E2E2E', foreground='#FFFFFF')
     else:
         # Switch to light mode
-        root.tk_setPalette('')  # Set to the default theme
+        root.tk_setPalette(background='#FFFFFF', foreground = '#000000')  # Set to the default theme
 
 def generate_commands():
     input_file = entry_input_file.get()
@@ -90,8 +90,8 @@ def open_output_folder():
 
 # Create main window
 root = tk.Tk()
-root.title("Stringinator 3000 by VeeTec")
-root.geometry("550x350")
+root.title("Stringinator 3000 by VeeTec, Pritz and Viper4K")
+root.geometry("550x400")
 
 # Introduction text
 intro_text = """Welcome to Stringinator 3000
