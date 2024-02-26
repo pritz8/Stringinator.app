@@ -5,5 +5,4 @@ Please provide the input file containing Label and In-Game Name pairs with the f
 
 LABEL=IN-GAME NAME (Example: BODY_RB=ROCKET BUNNY)
 
-Each pair should be on a separate line
 ------------------------------------------------------------------------
