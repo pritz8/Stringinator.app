@@ -6,3 +6,8 @@ Please provide the input file containing Label and In-Game Name pairs with the f
 LABEL=IN-GAME NAME (Example: BODY_RB=ROCKET BUNNY)
 
 ------------------------------------------------------------------------
+
+Using the file:
+
+Copy code from Stringinator.py file and paste in Visual Studio code and run.. 
+
