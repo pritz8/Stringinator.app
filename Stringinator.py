@@ -1,6 +1,10 @@
+import os
+import pickle
 import tkinter as tk
 from tkinter import filedialog, messagebox, ttk
-import os
+
+from theme import Theme
+
 
 def browse_file():
     filename = filedialog.askopenfilename(filetypes=[("Text files", "*.txt")])
@@ -8,14 +12,6 @@ def browse_file():
         entry_input_file.delete(0, tk.END)
         entry_input_file.insert(0, filename)
 
-def toggle_theme():
-    current_theme = root.tk_setPalette(background='#FFFFFF', foreground = '#000000')  # Get the current theme
-    if current_theme == 'light':
-        # Switch to dark mode
-        root.tk_setPalette(background='#2E2E2E', foreground='#FFFFFF')
-    else:
-        # Switch to light mode
-        root.tk_setPalette(background='#FFFFFF', foreground = '#000000')  # Set to the default theme
 
 def generate_commands():
     input_file = entry_input_file.get()
@@ -34,7 +30,19 @@ def generate_commands():
     string_folder = os.path.join(output_folder, "_String")
     os.makedirs(string_folder, exist_ok=True)
 
-    languages = ["ENGLISH", "DANISH", "DUTCH", "FINNISH", "FRENCH", "GERMAN", "ITALIAN", "MEXICAN", "POLISH", "SPANISH", "SWEDISH"]
+    languages = [
+        "ENGLISH",
+        "DANISH",
+        "DUTCH",
+        "FINNISH",
+        "FRENCH",
+        "GERMAN",
+        "ITALIAN",
+        "MEXICAN",
+        "POLISH",
+        "SPANISH",
+        "SWEDISH",
+    ]
 
     with open(input_file, "r") as file:
         data = file.readlines()
@@ -43,9 +51,13 @@ def generate_commands():
         for lang in languages:
             string_end_file.write("// String\n\n")
             if game_type == "Most Wanted":
-                string_end_file.write(f"if file_exists absolute LANGUAGES\\{lang}.bin\n")
+                string_end_file.write(
+                    f"if file_exists absolute LANGUAGES\\{lang}.bin\n"
+                )
             elif game_type == "Carbon":
-                string_end_file.write(f"if file_exists absolute LANGUAGES\\{lang}_FRONTEND.bin\n")
+                string_end_file.write(
+                    f"if file_exists absolute LANGUAGES\\{lang}_FRONTEND.bin\n"
+                )
             string_end_file.write("do\n")
             string_end_file.write(f"append _String\\{lang}.end\n")
             string_end_file.write("else\n")
@@ -58,11 +70,14 @@ def generate_commands():
                     file.write(f"new negate LANGUAGES\\{lang}.BIN\n")
                 elif game_type == "Carbon":
                     file.write(f"new negate LANGUAGES\\{lang}_FRONTEND.BIN\n")
-                
+
                 for line in data:
                     name_pair = line.strip().split("=")
                     if len(name_pair) != 2:
-                        messagebox.showerror("Error", f"Invalid format in input file: {line.strip()}. Use 'LABEL=IN-GAME NAME' format.")
+                        messagebox.showerror(
+                            "Error",
+                            f"Invalid format in input file: {line.strip()}. Use 'LABEL=IN-GAME NAME' format.",
+                        )
                         return
                     insert_name, insert_name2 = name_pair
                     file.write(f"{command_type} LANGUAGES\\{lang}")
@@ -75,23 +90,44 @@ def generate_commands():
                     file.write(f" {insert_name}")
                     if insert_name2.strip():
                         if " " in insert_name2:
-                            file.write(f" \"{insert_name2.strip()}\"")
+                            file.write(f' "{insert_name2.strip()}"')
                         else:
                             file.write(f" {insert_name2.strip()}")
                     file.write("\n")
-                
+
                 file.write("\n")
 
     messagebox.showinfo("Success", "Strings generated successfully.")
+
 
 def open_output_folder():
     output_folder = "Output"
     os.startfile(output_folder)
 
+
 # Create main window
 root = tk.Tk()
 root.title("Stringinator 3000 by VeeTec, Pritz and Viper4K")
-root.geometry("550x400")
+
+screen_width = 700
+screen_height = 600
+x_coord = root.winfo_screenwidth() // 2 - screen_width
+y_coord = (root.winfo_screenheight() - 70) // 2 - screen_height // 2
+root.geometry(f"{screen_width}x{screen_height}+{x_coord+screen_width//2}+{y_coord}")
+THEME_FILE = os.path.join(os.curdir, "settings", "theme.bin")
+
+if not os.path.exists(os.path.join(os.curdir, "settings")):
+    os.mkdir(os.path.join(os.curdir, "settings"))
+
+if not os.path.exists(THEME_FILE):
+    with open(THEME_FILE, "wb") as f:
+        pickle.dump("dark", f)
+        CURR_THEME = "dark"
+else:
+    with open(THEME_FILE, "rb") as f:
+        CURR_THEME = pickle.load(f)
+
+theme = Theme(root, CURR_THEME)
 
 # Introduction text
 intro_text = """Welcome to Stringinator 3000
@@ -117,7 +153,9 @@ button_browse.grid(row=1, column=2, padx=5, pady=5)
 # Command type dropdown menu
 command_var = tk.StringVar(root)
 command_var.set("add_or_update_string")  # Default value
-button_command_type = tk.OptionMenu(root, command_var, "add_or_update_string", "add_string")
+button_command_type = tk.OptionMenu(
+    root, command_var, "add_or_update_string", "add_string"
+)
 button_command_type.grid(row=2, column=1, padx=5, pady=5)
 button_command_type.config(text="Command Type: add_or_update_string")
 
@@ -133,12 +171,15 @@ button_generate = tk.Button(root, text="Generate Strings", command=generate_comm
 button_generate.grid(row=4, column=1, padx=5, pady=5)
 
 # Open output folder button
-button_open_output_folder = tk.Button(root, text="Open Output Folder", command=open_output_folder)
+button_open_output_folder = tk.Button(
+    root, text="Open Output Folder", command=open_output_folder
+)
 button_open_output_folder.grid(row=5, column=1, padx=5, pady=5)
 
-#Toggle theme button
-button_toggle_theme = tk.Button(root, text="Toggle Theme", command=toggle_theme)
+# Toggle theme button
+button_toggle_theme = tk.Button(root, text="Toggle Theme", command=theme.toggle_theme)
 button_toggle_theme.grid(row=6, column=1, padx=5, pady=5)
+
 
 # Run the GUI
 root.mainloop()
