@@ -9,5 +9,9 @@ LABEL=IN-GAME NAME (Example: BODY_RB=ROCKET BUNNY)
 
 Using the file:
 
-Copy code from Stringinator.py file and paste in Visual Studio code and run.. 
+Clone repo, run stringinator.py for app to launch.
+
+------------------------------------------------------------------------
+
+Happy modding :)
 
